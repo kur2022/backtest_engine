@@ -1,12 +1,32 @@
-# from strategy_generator import generate_rule_based_strategies
-# from backtest_engine import run_backtest
+import yfinance as yf
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
 
-buy_levels = [1.001, 1.002, 1.003]
-sell_levels = [0.999, 0.998, 0.997]
+def load_intraday_data(symbol="^NSEBANK", interval="15m", period="5d"):
+    data = yf.download(symbol, interval=interval, period=period)
+    data = data.dropna()
+    # Rename columns to match Backtest_Engine expectations
+    data.columns = [f"{col}_{symbol}" for col in data.columns]
+    return data
 
-strategies = generate_rule_based_strategies(buy_levels, sell_levels)
+def fetch_nse_option_chain(symbol="BANKNIFTY"):
+    url = f"https://www.nseindia.com/api/option-chain-indices?symbol={symbol}"
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+    session = requests.Session()
+    session.get("https://www.nseindia.com", headers=headers)
+    response = session.get(url, headers=headers).json()
+    return response['records']['data']
 
-for strat in strategies:
-    print(f"\n🔍 Testing {strat['name']}")
-    result = run_backtest(data, strat['logic'])
-    print(f"Profit ₹{result['total_profit']:.2f}, Win Rate {result['win_rate']:.2f}%")
+def extract_atm_premiums(data):
+    spot_price = data[0]['underlyingValue']
+    strikes = [d['strikePrice'] for d in data if 'CE' in d and 'PE' in d]
+    atm_strike = min(strikes, key=lambda x: abs(x - spot_price))
+    for d in data:
+        if d['strikePrice'] == atm_strike and 'CE' in d and 'PE' in d:
+            ce = d['CE']['lastPrice']
+            pe = d['PE']['lastPrice']
+            return ce, pe, atm_strike, spot_price
+    return None
