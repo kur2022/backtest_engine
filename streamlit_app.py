@@ -10,6 +10,9 @@ st.title("📊 Backtest_Engine Dashboard")
 # Load data
 with st.spinner("Loading intraday data..."):
     data = load_intraday_data()
+    if data.empty:
+        st.error("Failed to load data. Please check your internet connection or symbol.")
+        st.stop()
 
 # Strategy parameters
 st.sidebar.header("Strategy Parameters")
@@ -25,9 +28,11 @@ result = run_backtest(data, strategy['logic'], plot=False)
 
 # Show results
 st.subheader(f"🔍 Strategy: {strategy['name']}")
-st.metric("Total Trades", result["total_trades"])
-st.metric("Win Rate", f"{result['win_rate']:.2f}%")
-st.metric("Total Profit", f"₹{result['total_profit']:.2f}")
+col1, col2, col3 = st.columns(3)
+col1.metric("Total Trades", result["total_trades"])
+col2.metric("Win Rate", f"{result['win_rate']:.2f}%")
+col3.metric("Total Profit", f"₹{result['total_profit']:.2f}")
 
 # Show equity curve
+st.subheader("📈 Equity Curve")
 st.line_chart(result["data"]["Cumulative"])
