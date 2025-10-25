@@ -1,4 +1,4 @@
 // utils/supabaseClient.js
-import { createBrowserSupabaseClient } from '@supabase/supabase-js'
+import { createBrowserSupabaseClient } from '@supabase/supabase-js';
 
-export const supabase = createBrowserSupabaseClient()
+export const supabase = createBrowserSupabaseClient();
