@@ -1,8 +1,7 @@
 // pages/_app.js
 import '../styles/globals.css'
-import { SessionContextProvider } from '@supabase/auth-helpers-react'
+import { SessionContextProvider } from '@supabase/ssr'
 import { supabase } from '../utils/supabaseClient'
-import { SessionContextProvider } from '@supabase/ssr';
 
 export default function App({ Component, pageProps }) {
   return (
