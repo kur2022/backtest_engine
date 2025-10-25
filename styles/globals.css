@@ -1,0 +1,5 @@
+@tailwind base; @tailwind components; @tailwind utilities;
+html, body, #__next { height:100%; }
+.input{ padding:0.5rem; border:1px solid #ddd; border-radius:6px }
+.btn{ padding:0.6rem 1rem; background:#111827; color:white; border-radius:6px }
+.btn-outline{ padding:0.6rem 1rem; border:1px solid #111827; border-radius:6px }
